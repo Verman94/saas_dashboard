@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advisors Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'inter': ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .glass-effect {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .sidebar-gradient {
+      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    }
+    .card-hover {
+      transition: all 0.3s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+    .animate-pulse-slow {
+      animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+</head>
+<body class="font-inter bg-gray-50">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <aside class="sidebar-gradient w-20 flex flex-col items-center py-6 space-y-6">
+      <!-- Logo -->
+      <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+        <span class="text-white text-xl font-bold">A</span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="flex-1 flex flex-col space-y-3">
+        <button class="nav-item active w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white transition-all duration-200 hover:bg-blue-600 hover:scale-105" title="Dashboard">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="11" width="7" height="9"/>
+            <rect x="14" y="7" width="7" height="13"/>
+            <rect x="21" y="3" width="0" height="0"/>
+            <rect x="3" y="3" width="7" height="5"/>
+          </svg>
+        </button>
+        
+        <button class="nav-item w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center text-gray-300 transition-all duration-200 hover:bg-blue-500 hover:text-white hover:scale-105" title="Banking">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="2" y="7" width="20" height="13" rx="2"/>
+            <path d="M16 3h-8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/>
+          </svg>
+        </button>
+        
+        <button class="nav-item w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center text-gray-300 transition-all duration-200 hover:bg-blue-500 hover:text-white hover:scale-105" title="Invoices">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <path d="M16 2v4"/>
+            <path d="M8 2v4"/>
+            <path d="M3 10h18"/>
+          </svg>
+        </button>
+        
+        <button class="nav-item w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center text-gray-300 transition-all duration-200 hover:bg-blue-500 hover:text-white hover:scale-105" title="Analytics">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M3 17l6-6 4 4 8-8"/>
+            <path d="M14 7h7v7"/>
+          </svg>
+        </button>
+      </nav>
+
+      <!-- User & Logout -->
+      <div class="flex flex-col space-y-3">
+        <div class="w-12 h-12 bg-gray-700 rounded-full flex items-center justify-center text-white font-semibold text-sm transition-all duration-200 hover:bg-blue-500 hover:scale-105 cursor-pointer">
+          M
+        </div>
+        <button class="w-12 h-12 bg-gray-700 rounded-xl flex items-center justify-center text-gray-300 transition-all duration-200 hover:bg-red-500 hover:text-white hover:scale-105" title="Logout">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16,17 21,12 16,7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col">
+      <!-- Header -->
+      <header class="gradient-bg text-white p-6">
+        <div class="flex items-center justify-between mb-6">
+          <!-- Date Range -->
+          <div class="flex items-center space-x-4 glass-effect bg-white/10 rounded-2xl px-6 py-3">
+            <span class="text-lg font-semibold">Overview from</span>
+            <input type="date" value="2024-01-01" class="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <span class="text-lg font-semibold">to</span>
+            <input type="date" value="2024-12-31" class="bg-white/20 border border-white/30 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
+          </div>
+
+          <!-- Navigation Tabs -->
+          <div class="flex items-center space-x-1 glass-effect bg-white/10 rounded-2xl px-2 py-1">
+            <button class="px-4 py-2 rounded-xl text-white/70 hover:text-white transition-colors">Customer Orders</button>
+            <button class="px-4 py-2 rounded-xl bg-white/20 text-white font-medium">Invoiced Orders</button>
+            <button class="px-4 py-2 rounded-xl text-white/70 hover:text-white transition-colors">Inventory</button>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-3 gap-6">
+          <div class="glass-effect bg-white/10 rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white/80 text-sm font-medium">TOTAL VALUE</h3>
+              <div class="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                </svg>
+              </div>
+            </div>
+            <p class="text-3xl font-bold text-white">1,230,340</p>
+            <div class="flex items-center mt-2">
+              <span class="text-green-400 text-sm font-medium">+7.3%</span>
+              <span class="text-white/60 text-sm ml-2">vs last month</span>
+            </div>
+          </div>
+
+          <div class="glass-effect bg-white/10 rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white/80 text-sm font-medium">STANDARD COST</h3>
+              <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+            </div>
+            <p class="text-3xl font-bold text-white">253,110</p>
+            <div class="flex items-center mt-2">
+              <span class="text-green-400 text-sm font-medium">+5.2%</span>
+              <span class="text-white/60 text-sm ml-2">vs last month</span>
+            </div>
+          </div>
+
+          <div class="glass-effect bg-white/10 rounded-2xl p-6 card-hover">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-white/80 text-sm font-medium">ACTUAL COST</h3>
+              <div class="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+              </div>
+            </div>
+            <p class="text-3xl font-bold text-white">455,770</p>
+            <div class="flex items-center mt-2">
+              <span class="text-red-400 text-sm font-medium">-2.1%</span>
+              <span class="text-white/60 text-sm ml-2">vs last month</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Treemap Section -->
+      <div class="flex-1 p-6 bg-gray-50">
+        <div class="bg-white rounded-3xl shadow-xl p-6 h-full">
+          <!-- Controls -->
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Cost Analysis Treemap</h2>
+            <div class="flex items-center space-x-3">
+              <!-- Filter Button -->
+              <div class="relative">
+                <button id="filterBtn" class="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl transition-all duration-200">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
+                  </svg>
+                  <span id="filterText">Actual Cost</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <polyline points="6,9 12,15 18,9"/>
+                  </svg>
+                </button>
+                <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 hidden z-50">
+                  <div class="filter-option px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm" data-value="actual">Actual Cost</div>
+                  <div class="filter-option px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm" data-value="standard">Standard Cost</div>
+                </div>
+              </div>
+
+              <!-- Fullscreen Button -->
+              <button id="fullscreenBtn" class="flex items-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition-all duration-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                </svg>
+                <span>Fullscreen</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Treemap Container -->
+          <div id="treemapContainer" class="w-full h-96 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-700 mb-2">Treemap Visualization</h3>
+              <p class="text-gray-500 text-sm">Interactive cost analysis will appear here</p>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div class="mt-6 flex items-center justify-center space-x-2">
+            <span class="text-sm text-gray-600">Performance:</span>
+            <div class="flex space-x-1">
+              <div class="w-6 h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold">-3</div>
+              <div class="w-6 h-6 bg-red-300 rounded text-gray-700 text-xs flex items-center justify-center font-bold">-2</div>
+              <div class="w-6 h-6 bg-red-100 rounded text-gray-700 text-xs flex items-center justify-center font-bold">-1</div>
+              <div class="w-6 h-6 bg-gray-300 rounded text-gray-700 text-xs flex items-center justify-center font-bold">0</div>
+              <div class="w-6 h-6 bg-green-100 rounded text-gray-700 text-xs flex items-center justify-center font-bold">+1</div>
+              <div class="w-6 h-6 bg-green-300 rounded text-gray-700 text-xs flex items-center justify-center font-bold">+2</div>
+              <div class="w-6 h-6 bg-green-500 rounded text-white text-xs flex items-center justify-center font-bold">+3</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Filter functionality
+    const filterBtn = document.getElementById('filterBtn');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const filterText = document.getElementById('filterText');
+    const filterOptions = document.querySelectorAll('.filter-option');
+
+    filterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      filterDropdown.classList.toggle('hidden');
+    });
+
+    filterOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        const value = option.getAttribute('data-value');
+        const text = option.textContent;
+        filterText.textContent = text;
+        filterDropdown.classList.add('hidden');
+        console.log('Filter changed to:', value);
+      });
+    });
+
+    document.addEventListener('click', () => {
+      filterDropdown.classList.add('hidden');
+    });
+
+    // Fullscreen functionality
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const treemapContainer = document.getElementById('treemapContainer');
+
+    fullscreenBtn.addEventListener('click', () => {
+      if (!document.fullscreenElement) {
+        treemapContainer.requestFullscreen();
+        fullscreenBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M5 8h3V5a2 2 0 0 1 2-2h3M19 8h-3v3a2 2 0 0 1-2 2h-3M5 16h3v3a2 2 0 0 1 2 2h3M19 16h-3v-3a2 2 0 0 1-2-2h-3"/>
+          </svg>
+          <span>Exit Fullscreen</span>
+        `;
+      } else {
+        document.exitFullscreen();
+        fullscreenBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+          </svg>
+          <span>Fullscreen</span>
+        `;
+      }
+    });
+
+    // Add some interactive effects
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+          nav.classList.remove('active', 'bg-blue-500');
+          nav.classList.add('bg-gray-700');
+        });
+        this.classList.add('active', 'bg-blue-500');
+        this.classList.remove('bg-gray-700');
+      });
+    });
+
+    // Simulate loading animation
+    setTimeout(() => {
+      document.getElementById('treemapContainer').innerHTML = `
+        <div class="w-full h-full flex items-center justify-center">
+          <div class="text-center">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="text-gray-500">Loading treemap data...</p>
+          </div>
+        </div>
+      `;
+    }, 1000);
+  </script>
+</body>
+</html> 
