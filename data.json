@@ -1,0 +1,92 @@
+[
+  {
+    "name": "A",
+    "children": [
+      {
+        "name": "AA",
+        "children": [
+          {
+            "name": "هرکولد",
+            "children": [
+              { "name": "DS33", "value": 80, "change": -1.5 },
+              { "name": "DA23", "value": 60, "change": 0.0 },
+              { "name": "DF44", "value": 50, "change": 1.8 }
+            ]
+          },
+          {
+            "name": "AB",
+            "children": [
+              { "name": "شرکت الف", "value": 70, "change": 2.9 },
+              { "name": "AlphaCo", "value": 55, "change": -2.2 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "B",
+    "children": [
+      {
+        "name": "BA",
+        "children": [
+          {
+            "name": "اپتیلوکس",
+            "children": [
+              { "name": "DF23", "value": 90, "change": 2.5 },
+              { "name": "DU03", "value": 70, "change": -0.8 },
+              { "name": "DP49", "value": 55, "change": 1.1 }
+            ]
+          },
+          { "name": "DA33", "value": 70, "change": -2.7 },
+          {
+            "name": "BB",
+            "children": [
+              { "name": "BetaCo", "value": 60, "change": 0.0 },
+              { "name": "شرکت ب", "value": 45, "change": -3.1 }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "C",
+    "children": [
+      {
+        "name": "CA",
+        "children": [
+          { "name": "GammaCo", "value": 100, "change": 3.5 },
+          { "name": "شرکت ج", "value": 80, "change": -1.0 }
+        ]
+      },
+      {
+        "name": "CB",
+        "children": [
+          { "name": "DeltaCo", "value": 60, "change": 0.7 },
+          { "name": "شرکت د", "value": 40, "change": -0.5 }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "D",
+    "children": [
+      {
+        "name": "DA",
+        "children": [
+          { "name": "EpsilonCo", "value": 90, "change": 1.2 },
+          { "name": "شرکت ه", "value": 70, "change": -2.9 }
+        ]
+      },
+      {
+        "name": "DB",
+        "children": [
+          { "name": "ZetaCo", "value": 50, "change": 0.0 },
+          { "name": "شرکت و", "value": 30, "change": 2.0 }
+        ]
+      }
+    ]
+  }
+]
+ 

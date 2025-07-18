@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advisors Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sidebar-bg: #181a1b;
+      --sidebar-active: #23272a;
+      --sidebar-icon: #fff;
+      --sidebar-label: #fff;
+      --main-bg: #f5f6fa;
+      --card-bg: #fff;
+      --card-radius: 18px;
+      --accent: #ff7a59;
+      --kpi-bg: #fff;
+      --kpi-text: #222;
+      --kpi-label: #888;
+      --kpi-value: #222;
+      --kpi-growth: #27ae60;
+      --danger: #ff4d4f;
+      --success: #27ae60;
+      --warning: #f1c40f;
+      --gray: #b0b0b0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--main-bg);
+      color: #222;
+    }
+    .dashboard-root {
+      display: flex;
+      min-height: 100vh;
+      background: var(--main-bg);
+    }
+    .sidebar {
+      width: 110px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0 12px 0;
+      border-radius: 0;
+    }
+    .sidebar .logo {
+      width: 40px;
+      height: 40px;
+      background: #23272a;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      color: #fff;
+      font-weight: bold;
+      margin-bottom: 60px;
+    }
+    .sidebar nav {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+    }
+    .sidebar nav .nav-item {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: var(--sidebar-icon);
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 8px;
+      background: #23272a;
+    }
+    .sidebar nav .nav-item.active, .sidebar nav .nav-item:hover {
+      background: #3fc1f5;
+    }
+    .sidebar nav .nav-label {
+      font-size: 0.95rem;
+      color: var(--sidebar-label);
+      margin-top: 2px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      text-align: center;
+      user-select: none;
+    }
+    .sidebar .logout-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      margin-top: 0px;
+      margin-bottom: 30px;
+      background: #23272a;
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .sidebar .logout-btn:hover {
+      background:#3fc1f5;
+    }
+    .sidebar-user-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #23272a;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .sidebar-user-circle:hover {
+      background: #3fc1f5;
+    }
+    .main-content {
+      flex: 1;
+      padding: 32px 0 0 0;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .topbar {
+      padding: 0 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .topbar .overview-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .overview-date-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .overview-text {
+      color: #fff;
+      font-size: 1.6rem;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .date-input {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 120px;
+    }
+    .date-input:hover {
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-1px);
+    }
+    .date-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.3);
+      border-color: #ff7a59;
+      box-shadow: 0 0 0 3px rgba(255, 122, 89, 0.3);
+      transform: translateY(-1px);
+    }
+    .topbar .overview-tabs {
+      display: flex;
+      gap: 40px;
+      margin-top: 0;
+    }
+    .topbar .overview-tabs .tab {
+      color: #fff;
+      opacity: 0.7;
+      font-weight: 600;
+      cursor: pointer;
+      padding-bottom: 4px;
+      border-bottom: 2px solid transparent;
+      margin-right: 8px;
+      transition: border 0.2s, opacity 0.2s;
+    }
+    .topbar .overview-tabs .tab.active {
+      opacity: 1;
+      border-bottom: 2px solid var(--accent);
+    }
+    .user-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #fff;
+      color: #4A90E2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      margin-left: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .user-circle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    .kpi-row {
+      display: flex;
+      gap: 0;
+      margin: 16px 0 0 0;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .kpi-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0;
+      padding: 14px 20px;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-width: 0;
+      box-shadow: none;
+      border: none;
+      border-right: 1px solid rgba(255,255,255,0.3);
+    }
+    .kpi-card:last-child {
+      border-right: none;
+    }
+    .kpi-label {
+      font-size: 1rem;
+      color: #e0e0e0;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .kpi-value {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .kpi-growth {
+      font-size: 0.95rem;
+      color: #b6f09c;
+      font-weight: 600;
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .kpi-growth svg {
+      width: 1em;
+      height: 1em;
+      vertical-align: middle;
+    }
+    .kpi-negative {
+      color: #ffb4b4;
+    }
+    .kpi-positive {
+      color: #b6f09c;
+    }
+    .kpi-warning {
+      color: #ffe59e;
+    }
+    .content-row {
+      display: flex;
+      gap: 24px;
+      margin: 32px 40px 0 40px;
+      align-items: flex-start;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 24px;
+      margin-bottom: 24px;
+      min-width: 0;
+    }
+    .accounts-card {
+      flex: 2;
+      margin-right: 0;
+    }
+    .cashflow-card {
+      flex: 1.2;
+    }
+    .transfer-card {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .accounts-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .accounts-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .accounts-list li:last-child {
+      border-bottom: none;
+    }
+    .account-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .account-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: #f5f6fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+    .account-name {
+      font-weight: 600;
+      color: #222;
+    }
+    .account-id {
+      color: var(--gray);
+      font-size: 0.95rem;
+      margin-left: 2px;
+    }
+    .account-balance {
+      font-weight: 700;
+      color: #222;
+      text-align: right;
+    }
+    .account-sub {
+      color: var(--gray);
+      font-size: 0.9rem;
+      text-align: right;
+    }
+    .cashflow-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+    .cashflow-label {
+      color: #888;
+    }
+    .cashflow-value {
+      font-weight: 600;
+    }
+    .cashflow-positive {
+      color: var(--success);
+    }
+    .cashflow-negative {
+      color: var(--danger);
+    }
+    .cashflow-warning {
+      color: var(--danger);
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+    .cashflow-total {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 18px 0 8px 0;
+    }
+    .see-all-btn {
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .transfer-btn {
+      background: #000;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .shortcut, .workflow {
+      background: #f5f6fa;
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      font-size: 1rem;
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .shortcut-label {
+      color: #888;
+      font-size: 0.95rem;
+    }
+    .shortcut-value {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .shortcut-arrow {
+      margin-left: auto;
+      font-size: 1.2rem;
+      color: #888;
+      cursor: pointer;
+    }
+    .pie-chart {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+      display: block;
+    }
+    @media (max-width: 1200px) {
+      .content-row { flex-direction: column; }
+      .accounts-card, .cashflow-card, .transfer-card { width: 100%; margin-right: 0; }
+    }
+    @media (max-width: 800px) {
+      .dashboard-root { flex-direction: column; }
+      .sidebar { flex-direction: row; width: 100%; height: 70px; border-radius: 0; padding: 0 12px; }
+      .sidebar nav { flex-direction: row; gap: 8px; }
+      .main-content { padding: 0; }
+      .topbar { padding: 0 12px; }
+      .content-row { margin: 24px 12px 0 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-root">
+    <aside class="sidebar">
+      <div class="logo">
+        <img src="logo.png" alt="Logo" style="width: 200%; height: 200%; object-fit: contain;">
+      </div>
+      <nav>
+        <div class="nav-item active" title="Dashboards">
+          <svg width="28" height="28" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="7" height="9"/><rect x="14" y="7" width="7" height="13"/><rect x="21" y="3" width="0" height="0"/><rect x="3" y="3" width="7" height="5"/></svg>
+        </div>
+        <div class="nav-item" title="Banking">
+          <svg width="28" height="28" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="13" rx="2"/><path d="M16 3h-8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
+        </div>
+        <div class="nav-item" title="Invoices">
+          <svg width="28" height="28" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+        </div>
+        <div class="nav-item" title="Projecting">
+          <svg width="28" height="28" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+        </div>
+              </nav>
+        <div class="sidebar-user-circle">M</div>
+        <button class="logout-btn" title="Logout">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16,17 21,12 16,7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </aside>
+    <main class="main-content" style="background: linear-gradient(120deg, #3fc1f5 0%, #2e86ea 100%)">
+      <div class="topbar">
+        <div class="overview-row">
+          <div class="overview-date-section">
+            <span class="overview-text">Overview from</span>
+            <input type="date" class="date-input" id="start-date" value="2024-01-01">
+            <span class="overview-text">to</span>
+            <input type="date" class="date-input" id="end-date" value="2024-12-31">
+          </div>
+          <div class="overview-tabs">
+            <div class="tab">Customer Orders</div>
+            <div class="tab active">Invoiced Orders</div>
+            <div class="tab">Inventory</div>
+          </div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">TOTAL VALUE</div>
+            <div class="kpi-value">1,230,340<span style="font-size:1rem;opacity:0.7;"></span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">TOTAL STANDARD COST</div>
+            <div class="kpi-value">253,110<span style="font-size:1rem;opacity:0.7;"></span></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">TOTAL ACTUAL COST</div>
+            <div class="kpi-value">455,770<span style="font-size:1rem;opacity:0.7;"></span></div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;align-items:stretch;justify-content:center;padding:20px 40px;position:relative;flex-direction:column;min-height:0;">
+        <!-- ECharts Treemap container -->
+        <div id="echarts-treemap" style="width:100%;max-width:1200px;height:600px;min-height:0;margin:auto;position:relative;">
+        </div>
+        <!-- Fullscreen button positioned over treemap -->
+        <div style="position:absolute;top:-5px;right:195px;z-index:1000;pointer-events:none;">
+          <div style="position:relative;width:100%;max-width:1200px;margin:auto;">
+            <button id="fullscreen-btn" style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 12px;color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;backdrop-filter:blur(10px);transition:all 0.2s;pointer-events:auto;">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              Fullscreen
+            </button>
+            <!-- Filter button with dropdown -->
+            <div style="position:absolute;top:10px;right:140px;pointer-events:auto;">
+              <button id="filter-btn" style="background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 12px;color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;backdrop-filter:blur(10px);transition:all 0.2s;min-width:160px;justify-content:space-between;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"/>
+                </svg>
+                <span id="filter-text">Actual Cost</span>
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <polyline points="6,9 12,15 18,9"/>
+                </svg>
+              </button>
+              <div id="filter-dropdown" style="position:absolute;top:100%;right:0;margin-top:4px;background:rgba(255,255,255,0.95);border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:4px;min-width:140px;backdrop-filter:blur(10px);display:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                <div class="filter-option" data-value="actual" style="padding:8px 12px;cursor:pointer;border-radius:4px;color:#333;font-size:14px;transition:background 0.2s;">Actual Cost</div>
+                <div class="filter-option" data-value="standard" style="padding:8px 12px;cursor:pointer;border-radius:4px;color:#333;font-size:14px;transition:background 0.2s;">Standard Cost</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Discrete Color Legend: 3 2 1 0 -1 -2 -3 (force LTR for correct order) -->
+        <div id="treemap-legend" style="width:100%;max-width:1200px;margin:12px auto 0 auto;display:flex;justify-content:center;gap:0;flex-wrap:wrap;direction:ltr;">
+          <div style="display:flex;align-items:center;gap:0;">                        
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#F44336;color:#fff;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">-3</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#EF9A9A;color:#fff;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">-2</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#FFCCBC;color:#222;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">-1</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#BDBDBD;color:#222;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">0</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#DCEDC8;color:#222;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">+1</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#A5D6A7;color:#222;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">+2</span>
+            <span style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:36px;height:28px;background:#4CAF50;color:#fff;font-size:1rem;font-family:'Vazirmatn','Vazir',Tahoma,Arial,sans-serif;font-weight:bold;">+3</span>
+
+          </div>
+        </div>
+      </div>
+      <!-- ECharts library from CDN -->
+      <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+      <script>
+        async function fetchTreemapData() {
+          try {
+            const response = await fetch('data.json');
+            if (!response.ok) throw new Error('Failed to load data.json');
+            return await response.json();
+          } catch (e) {
+            console.error(e);
+            return null;
+          }
+        }
+
+        // Obama-style gradient color mapping (visualDimension, levels)
+        const visualMin = -5;
+        const visualMax = 5;
+        const visualMinBound = -3;
+        const visualMaxBound = 3;
+        const colorGradient = ['#F44336', '#EF9A9A', '#FFCCBC', '#BDBDBD', '#DCEDC8', '#A5D6A7', '#4CAF50'];
+
+        function abbreviateName(name, maxLen = 14) {
+          if (!name) return '';
+          if (name.length <= maxLen) return name;
+          return name.slice(0, maxLen-1) + '…';
+        }
+        function isFarsi(str) {
+          return /[\u0600-\u06FF]/.test(str);
+        }
+        function getTextColor(bgColor) {
+          let r, g, b;
+          if (bgColor.startsWith('#')) {
+            const hex = bgColor.replace('#', '');
+            r = parseInt(hex.substring(0,2),16);
+            g = parseInt(hex.substring(2,4),16);
+            b = parseInt(hex.substring(4,6),16);
+          } else if (bgColor.startsWith('rgb')) {
+            [r,g,b] = bgColor.match(/\d+/g).map(Number);
+          } else {
+            return '#fff';
+          }
+          const luminance = (0.299*r + 0.587*g + 0.114*b)/255;
+          return luminance > 0.6 ? '#222' : '#fff';
+        }
+
+        async function renderTreemap() {
+          const chartDom = document.getElementById('echarts-treemap');
+          const myChart = echarts.init(chartDom, null, { locale: 'FA' });
+          window.myChart = myChart; // Make chart globally accessible
+          window.addEventListener('resize', () => myChart.resize());
+          const data = await fetchTreemapData();
+          if (!data) {
+            myChart.showLoading('default', {text: 'Failed to load data.json'});
+            return;
+          }
+          function convertToObamaFormat(nodes) {
+            for (const node of nodes) {
+              if (node.value === undefined && node.change !== undefined) {
+                node.value = [node.value || node.value === 0 ? node.value : 1, null, node.change];
+              } else if (node.value !== undefined && node.change !== undefined) {
+                node.value = [node.value, null, node.change];
+              }
+              if (node.children) convertToObamaFormat(node.children);
+            }
+          }
+          convertToObamaFormat(data);
+
+          myChart.setOption({
+            grid: { containLabel: true },
+            tooltip: {
+              confine: true,
+              backgroundColor: 'rgba(30,30,30,0.97)',
+              borderColor: '#23272a',
+              borderWidth: 1,
+              textStyle: {
+                color: '#fff',
+                fontFamily: 'Vazirmatn, Vazir, Tahoma, Arial, sans-serif',
+                fontSize: 16,
+                direction: 'rtl',
+                align: 'right'
+              },
+              formatter: function (info) {
+                let value = info.value;
+                let change = value[2];
+                return [
+                  '<div class="tooltip-title">' + echarts.format.encodeHTML(info.name) + '</div>',
+                  'Value: ' + (value[0] != null ? value[0] : '-') + '<br>',
+                  'Change: ' + (change != null ? (change > 0 ? '+' : '') + change + '%' : '-')
+                ].join('');
+              }
+            },
+            series: [
+              {
+                name: 'ALL',
+                type: 'treemap',
+                top: 32,
+                bottom: 8,
+                left: 8,
+                right: 8,
+                height: 'calc(100% - 40px)',
+                data: data,
+                leafDepth: null, // Show all levels at once
+                nodeClick: true, 
+                squareRatio: 1, // Use squarified layout
+                roam: true,
+                nodeClick: 'zoomToNode',
+                animation: true,
+                animationDurationUpdate: 400,
+                animationEasing: 'cubicOut',
+                label: {
+                  show: true,
+                  align: 'center',
+                  verticalAlign: 'middle',
+                  position: 'inside',
+                  overflow: 'break',
+                  ellipsis: '…',
+                  fontFamily: 'Vazirmatn, Vazir, Tahoma, Arial, sans-serif',
+                  fontWeight: 'bold',
+                  fontSize: 12,
+                  formatter: function(params) {
+                    const name = abbreviateName(params.data.name, 12);
+                    const change = params.data.value && params.data.value[2];
+                    if (change !== undefined && change !== null) {
+                      const changeText = (change > 0 ? '+' : '') + change + '%';
+                      return name + '\n' + changeText;
+                    }
+                    return name;
+                  },
+                  color: '#fff',
+                  rich: {
+                    parent: {
+                      cursor: 'default'
+                    }
+                  }
+                },
+                
+                // Remove upperLabel and breadcrumb for a flat view
+                upperLabel: { show: true },
+                breadcrumb: { show: true },
+                itemStyle: {
+                  borderColor: '#23272a',
+                  borderWidth: 2,
+                  borderRadius: 8,
+                  gapWidth: 4 // More visible boundaries
+                },
+                visualMin: visualMin,
+                visualMax: visualMax,
+                visualMinBound: visualMinBound,
+                visualMaxBound: visualMaxBound,
+                visualDimension: 2,
+                levels: [
+                  {
+                    itemStyle: {
+                      borderWidth: 3,
+                      borderColor: '#333',
+                      gapWidth: 6 // Stronger boundaries for top levels
+                    }
+                  },
+                  {
+                    color: colorGradient,
+                    colorMappingBy: 'value',
+                    itemStyle: {
+                      gapWidth: 4
+                    }
+                  },
+                  {
+                    itemStyle: {
+                      gapWidth: 2
+                    }
+                  }
+                ]
+              }
+            ]
+          });
+        }
+        renderTreemap();
+
+        // Fullscreen functionality
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const treemapContainer = document.getElementById('echarts-treemap');
+        const legendContainer = document.getElementById('treemap-legend');
+        let isFullscreen = false;
+
+        fullscreenBtn.addEventListener('click', function() {
+          if (!isFullscreen) {
+            // Enter fullscreen
+            if (treemapContainer.requestFullscreen) {
+              treemapContainer.requestFullscreen();
+            } else if (treemapContainer.webkitRequestFullscreen) {
+              treemapContainer.webkitRequestFullscreen();
+            } else if (treemapContainer.msRequestFullscreen) {
+              treemapContainer.msRequestFullscreen();
+            }
+            
+            // Update button text and icon
+            fullscreenBtn.innerHTML = `
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M5 8h3V5a2 2 0 0 1 2-2h3M19 8h-3v3a2 2 0 0 1-2 2h-3M5 16h3v3a2 2 0 0 1 2 2h3M19 16h-3v-3a2 2 0 0 1-2-2h-3"/>
+              </svg>
+              Exit Fullscreen
+            `;
+            isFullscreen = true;
+          } else {
+            // Exit fullscreen
+            if (document.exitFullscreen) {
+              document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+              document.msExitFullscreen();
+            }
+            
+            // Update button text and icon
+            fullscreenBtn.innerHTML = `
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              Fullscreen
+            `;
+            isFullscreen = false;
+          }
+        });
+
+        // Handle fullscreen change events
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+          if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+            // Exited fullscreen
+            fullscreenBtn.innerHTML = `
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              Fullscreen
+            `;
+            isFullscreen = false;
+            
+            // Resize chart when exiting fullscreen
+            if (window.myChart) {
+              window.myChart.resize();
+            }
+          }
+        }
+
+        // Filter functionality
+        const filterBtn = document.getElementById('filter-btn');
+        const filterDropdown = document.getElementById('filter-dropdown');
+        const filterText = document.getElementById('filter-text');
+        const filterOptions = document.querySelectorAll('.filter-option');
+        let currentFilter = 'actual';
+
+        filterBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          filterDropdown.style.display = filterDropdown.style.display === 'none' ? 'block' : 'none';
+        });
+
+        filterOptions.forEach(option => {
+          option.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            const text = this.textContent;
+            
+            currentFilter = value;
+            filterText.textContent = text;
+            filterDropdown.style.display = 'none';
+            
+            // Update treemap based on filter
+            updateTreemapFilter(value);
+          });
+
+          option.addEventListener('mouseenter', function() {
+            this.style.background = 'rgba(63, 193, 245, 0.1)';
+          });
+
+          option.addEventListener('mouseleave', function() {
+            this.style.background = 'transparent';
+          });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+          filterDropdown.style.display = 'none';
+        });
+
+        function updateTreemapFilter(filterType) {
+          // This function can be used to update the treemap data based on the selected filter
+          console.log('Filter changed to:', filterType);
+          // You can add logic here to switch between actual cost and standard cost data
+          // For now, it just logs the change
+        }
+      </script>
+    </main>
+  </div>
+  <script>
+    // Simple pie chart for Users composition
+    const canvas = document.getElementById('pieChart');
+    if (canvas && canvas.getContext) {
+      const ctx = canvas.getContext('2d');
+      const data = [30, 70]; // Paid, New
+      const colors = ['#b6f09c', '#a78bfa'];
+      let start = -0.5 * Math.PI;
+      data.forEach((value, i) => {
+        const angle = (value / 100) * 2 * Math.PI;
+        ctx.beginPath();
+        ctx.moveTo(60, 60);
+        ctx.arc(60, 60, 60, start, start + angle);
+        ctx.closePath();
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        start += angle;
+      });
+    }
+  </script>
+</body>
+</html> 
